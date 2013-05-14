@@ -1,12 +1,35 @@
 #!/bin/bash
 
-# Copyright 2013 The Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file.
-
-if [ $# -lt 1 -o $# -gt 2 ] ; then
-	echo "Usage: $0 [-R] <cmd>"
+function usage {
+	echo "Usage: $0 [-R] <cmd> [<dir>]"
 	exit 1
+}
+
+if [ $# -lt 1 -o $# -gt 3 ] ; then
+	usage
+fi
+
+RECURSE=
+DIR=.
+CMD=
+PWD=$(pwd)
+if [ $# -eq 1 ] ; then
+	CMD=$1
+elif [ $# -eq 2 ] ; then
+	if [ $1 == '-R' ] ; then
+		RECURSE='y'
+		CMD=$2
+	else
+		CMD=$1
+		DIR=$2
+	fi
+elif [ $# -eq 3 ] ; then
+	if [ $1 != '-R' ] ; then
+		usage
+	fi
+	RECURSE='y'
+	CMD=$2
+	DIR=$3
 fi
 
 function loop-recursive {
@@ -20,18 +43,16 @@ function loop-recursive {
         done
 }
 
-if [ $# -eq 2 ] ; then
-	if [ $1 != '-R' ] ; then
-		echo "Usage: $0 [-R] <cmd>"
-	        exit 1
-	fi	
-	loop-recursive $2;
+cd $DIR
+if [ $RECURSE ] ; then
+	loop-recursive $CMD
 else
 	for f in ./* ; do
 		if [ -d $f ] ; then
 			cd $f
-			$2
+			$CMD
 			cd ..
 		fi
 	done
 fi
+cd $PWD
