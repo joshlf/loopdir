@@ -36,8 +36,8 @@ function loop-recursive {
         for f in ./* ; do
                 if [ -d $f ] ; then
                         cd $f
-                        $1
-                        loop-recursive $1;
+                        $@	# Use $@ instead of $1 in case command has spaces
+                        loop-recursive $@;
                         cd ..
                 fi
         done
