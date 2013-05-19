@@ -36,7 +36,7 @@ function loop-recursive {
         for f in ./* ; do
                 if [ -d $f ] ; then
                         cd $f
-                        $@	# Use $@ instead of $1 in case command has spaces
+                        eval $@	# Use $@ instead of $1 in case command has spaces
                         loop-recursive $@;
                         cd ..
                 fi
@@ -50,7 +50,7 @@ else
 	for f in ./* ; do
 		if [ -d $f ] ; then
 			cd $f
-			$CMD
+			eval $CMD
 			cd ..
 		fi
 	done
