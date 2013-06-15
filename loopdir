@@ -40,6 +40,7 @@ function loop-recursive {
         for f in ./* ; do
                 if [ -d $f ] ; then
                         cd $f
+			unset $f # Unset in case the user-supplied code uses f as a variable
                         eval $@	# Use $@ instead of $1 in case command has spaces
                         loop-recursive $@;
                         cd ..
