@@ -37,15 +37,17 @@ elif [ $# -eq 3 ] ; then
 fi
 
 function loop-recursive {
-        for f in ./* ; do
-                if [ -d $f ] ; then
-                        cd $f
-			unset $f # Unset in case the user-supplied code uses f as a variable
-                        eval $@	# Use $@ instead of $1 in case command has spaces
-                        loop-recursive $@;
-                        cd ..
-                fi
-        done
+	for f in ./* ; do
+			if [ -d $f ] ; then
+				cd $f
+				if [ $? -eq 0 ] ; then
+					unset f # Unset in case the user-supplied code uses f as a variable
+					eval $@	# Use $@ instead of $1 in case command has spaces
+					loop-recursive $@;
+					cd ..
+				fi
+			fi
+	done
 }
 
 cd $DIR
@@ -55,8 +57,10 @@ else
 	for f in ./* ; do
 		if [ -d $f ] ; then
 			cd $f
-			eval $CMD
-			cd ..
+			if [ $? -eq 0 ] ; then
+				eval $CMD
+				cd ..
+			fi
 		fi
 	done
 fi
